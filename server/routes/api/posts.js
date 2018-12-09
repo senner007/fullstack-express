@@ -3,10 +3,6 @@ const mongodb = require('mongodb');
 const fs = require('fs');
 const util = require('util');
 const router = express.Router();
-const events = require('events')
-
-var emitter = new events.EventEmitter();
-
 const readFile = util.promisify(fs.readFile);
 
 var cnstring = (async function readCnString() { 
