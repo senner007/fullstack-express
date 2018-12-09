@@ -1,23 +1,20 @@
 const express = require('express');
 const mongodb = require('mongodb');
-var fs = require('fs');
+const fs = require('fs');
 const util = require('util');
 const router = express.Router();
+const events = require('events')
+
+var emitter = new events.EventEmitter();
 
 const readFile = util.promisify(fs.readFile);
 
-var cnstring;
-
-async function readCnString() { 
-    if (cnstring) return cnstring;
+var cnstring = (async function readCnString() { 
     console.log('getting cnstring...')
     var filename = process.argv[2];
     var text = await readFile(filename, 'utf8')
-    cnstring = text.split(/\r?\n/)[0].trim();
-    return cnstring;
-};
-
-(async () => await readCnString())();
+    return text.split(/\r?\n/)[0].trim();
+}());
 
 
 // GET Posts
@@ -48,14 +45,12 @@ router.delete('/:id', async (req, res) => {
         return res.status(204).send();
 
     await posts.deleteOne({_id: idString});
-
     return res.status(200).send();
 })
 
-var cnstring = "";
-async function loadPosts () {
 
-    const client = await mongodb.MongoClient.connect(await readCnString(), { useNewUrlParser: true });
+async function loadPosts () {
+    const client = await mongodb.MongoClient.connect(await cnstring, { useNewUrlParser: true });
     return client.db('fullstack-express').collection('posts');
 }
 
