@@ -16,14 +16,14 @@ var cnstring = (async function readCnString() {
 // GET Posts
 
 router.get('/', async (req, res) => {
-    const posts = await loadPosts ();
+    const posts = await loadNames ();
     return res.send(await posts.find({}).toArray())
 })
 
 // ADD Post
 
 router.post('/', async (req, res) => {
-    const posts = await loadPosts ();
+    const posts = await loadNames ();
     await posts.insertOne({
         text : req.body.text,
         createdAt: new Date()
@@ -35,7 +35,7 @@ router.post('/', async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
     const idString =  new mongodb.ObjectID(req.params.id);
-    const posts = await loadPosts ();
+    const posts = await loadNames ();
     const postById = await posts.findOne({_id: idString});
     if (postById == null) 
         return res.status(204).send();
@@ -45,10 +45,10 @@ router.delete('/:id', async (req, res) => {
 })
 
 
-async function loadPosts () {
+async function loadNames () {
+    
     const client = await mongodb.MongoClient.connect(await cnstring, { useNewUrlParser: true });
-    return client.db('fullstack-express').collection('posts');
+    return client.db('navnedb').collection('navne');
 }
-
 
 module.exports = router
