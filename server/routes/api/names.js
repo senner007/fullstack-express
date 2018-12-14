@@ -12,38 +12,12 @@ var cnstring = (async function readCnString() {
     return text.split(/\r?\n/)[0].trim();
 }());
 
-
-// GET Posts
+// GET Names
 
 router.get('/', async (req, res) => {
-    const posts = await loadNames ();
-    return res.send(await posts.find({}).toArray())
+    const names = await loadNames ();
+    return res.send(await names.find({}).toArray())
 })
-
-// ADD Post
-
-router.post('/', async (req, res) => {
-    const posts = await loadNames ();
-    await posts.insertOne({
-        text : req.body.text,
-        createdAt: new Date()
-    })
-    return res.status(201).send();
-})
-
-// Delete Post
-
-router.delete('/:id', async (req, res) => {
-    const idString =  new mongodb.ObjectID(req.params.id);
-    const posts = await loadNames ();
-    const postById = await posts.findOne({_id: idString});
-    if (postById == null) 
-        return res.status(204).send();
-
-    await posts.deleteOne({_id: idString});
-    return res.status(200).send();
-})
-
 
 async function loadNames () {
     
